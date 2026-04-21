@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generator Kombinasi Video</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        min-height: 100vh;
+        padding: 24px;
+      }
+      h1 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #38bdf8;
+        margin-bottom: 4px;
+      }
+      .subtitle {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        margin-bottom: 24px;
+      }
+
+      .card {
+        background: #1e293b;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        border: 1px solid #334155;
+      }
+      .card h2 {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      label {
+        font-size: 0.85rem;
+        color: #94a3b8;
+      }
+      select,
+      input[type="number"] {
+        background: #0f172a;
+        border: 1px solid #334155;
+        color: #e2e8f0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        width: 80px;
+      }
+      .ctrl-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      button {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: #38bdf8;
+        color: #0f172a;
+      }
+      .btn-primary:hover {
+        background: #7dd3fc;
+      }
+      .btn-secondary {
+        background: #334155;
+        color: #e2e8f0;
+      }
+      .btn-secondary:hover {
+        background: #475569;
+      }
+      .btn-danger {
+        background: #ef4444;
+        color: white;
+      }
+      .btn-danger:hover {
+        background: #f87171;
+      }
+
+      .stats {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .stat-box {
+        background: #0f172a;
+        border-radius: 8px;
+        padding: 12px 18px;
+        border: 1px solid #334155;
+        text-align: center;
+      }
+      .stat-box .val {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #38bdf8;
+      }
+      .stat-box .lbl {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: 2px;
+      }
+
+      .mode-toggle {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .mode-btn {
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: 1px solid #334155;
+        cursor: pointer;
+        font-size: 0.8rem;
+        background: transparent;
+        color: #94a3b8;
+      }
+      .mode-btn.active {
+        background: #38bdf8;
+        color: #0f172a;
+        border-color: #38bdf8;
+        font-weight: 600;
+      }
+
+      .search-box {
+        width: 100%;
+        padding: 8px 12px;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        color: #e2e8f0;
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        max-height: 420px;
+        overflow-y: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      thead {
+        position: sticky;
+        top: 0;
+        background: #1e293b;
+        z-index: 1;
+      }
+      th {
+        padding: 10px 12px;
+        text-align: left;
+        color: #64748b;
+        border-bottom: 1px solid #334155;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+      }
+      td {
+        padding: 9px 12px;
+        border-bottom: 1px solid #1e293b;
+      }
+      tr:hover td {
+        background: #0f172a;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin: 1px;
+        background: #1e40af;
+        color: #93c5fd;
+      }
+      .row-num {
+        color: #475569;
+        font-size: 0.78rem;
+      }
+      .seq {
+        color: #38bdf8;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+      }
+
+      .empty {
+        text-align: center;
+        padding: 40px;
+        color: #475569;
+      }
+      .note {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 8px;
+      }
+
+      .pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+        justify-content: center;
+      }
+      .page-info {
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎬 Generator Kombinasi Video Short</h1>
+    <p class="subtitle">
+      Generate semua kemungkinan campuran kejadian untuk setiap video
+    </p>
+
+    <div class="card">
+      <h2>⚙️ Pengaturan</h2>
+      <div class="controls">
+        <div class="ctrl-group">
+          <label>Total Kejadian (n)</label>
+          <input type="number" id="totalN" value="10" min="2" max="20" />
+        </div>
+        <div class="ctrl-group">
+          <label>Kejadian per Video (r)</label>
+          <input type="number" id="chooseR" value="5" min="1" max="10" />
+        </div>
+        <div style="display: flex; gap: 8px; align-items: flex-end">
+          <button class="btn-primary" onclick="generate()">Generate</button>
+          <button class="btn-secondary" onclick="reset()">Reset</button>
+        </div>
+      </div>
+
+      <div class="mode-toggle">
+        <span style="font-size: 0.82rem; color: #64748b; align-self: center"
+          >Mode:</span
+        >
+        <button
+          class="mode-btn active"
+          id="modeP"
+          onclick="setMode('permutasi')"
+        >
+          Permutasi (urutan penting)
+        </button>
+        <button class="mode-btn" id="modeK" onclick="setMode('kombinasi')">
+          Kombinasi (urutan tidak penting)
+        </button>
+      </div>
+
+      <div class="stats" id="statsBox" style="display: none">
+        <div class="stat-box">
+          <div class="val" id="statTotal">-</div>
+          <div class="lbl">Total Video</div>
+        </div>
+        <div class="stat-box">
+          <div class="val" id="statN">-</div>
+          <div class="lbl">Kejadian (n)</div>
+        </div>
+        <div class="stat-box">
+          <div class="val" id="statR">-</div>
+          <div class="lbl">Per Video (r)</div>
+        </div>
+        <div class="stat-box">
+          <div class="val" id="statMode">-</div>
+          <div class="lbl">Mode</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="resultCard" style="display: none">
+      <h2>📋 Hasil Kombinasi</h2>
+      <input
+        class="search-box"
+        type="text"
+        id="searchBox"
+        placeholder="🔍 Cari kombinasi... (contoh: 1,2,3)"
+        oninput="filterResults()"
+      />
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Urutan Kejadian (File)</th>
+              <th>Sequence</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <button class="btn-secondary" onclick="prevPage()" id="btnPrev">
+          ‹ Prev
+        </button>
+        <span class="page-info" id="pageInfo"></span>
+        <button class="btn-secondary" onclick="nextPage()" id="btnNext">
+          Next ›
+        </button>
+      </div>
+      <p class="note" id="noteText"></p>
+    </div>
+
+    <script>
+      let allResults = [];
+      let filtered = [];
+      let currentPage = 1;
+      const PAGE_SIZE = 50;
+      let currentMode = "permutasi";
+
+      function setMode(m) {
+        currentMode = m;
+        document
+          .getElementById("modeP")
+          .classList.toggle("active", m === "permutasi");
+        document
+          .getElementById("modeK")
+          .classList.toggle("active", m === "kombinasi");
+      }
+
+      function factorial(n) {
+        if (n <= 1) return 1;
+        return n * factorial(n - 1);
+      }
+
+      function generate() {
+        const n = parseInt(document.getElementById("totalN").value);
+        const r = parseInt(document.getElementById("chooseR").value);
+        if (r > n) {
+          alert("r tidak boleh lebih besar dari n!");
+          return;
+        }
+
+        const items = Array.from({ length: n }, (_, i) => i + 1);
+        allResults = [];
+
+        if (currentMode === "permutasi") {
+          permute(items, r, [], new Set());
+        } else {
+          combine(items, r, 0, []);
+        }
+
+        filtered = [...allResults];
+        currentPage = 1;
+
+        // Stats
+        document.getElementById("statsBox").style.display = "flex";
+        document.getElementById("statTotal").textContent =
+          allResults.length.toLocaleString();
+        document.getElementById("statN").textContent = n;
+        document.getElementById("statR").textContent = r;
+        document.getElementById("statMode").textContent =
+          currentMode === "permutasi" ? "P" : "C";
+
+        document.getElementById("resultCard").style.display = "block";
+        renderTable();
+
+        const formula =
+          currentMode === "permutasi"
+            ? `P(${n},${r}) = ${n}!/${n - r}! = ${allResults.length.toLocaleString()}`
+            : `C(${n},${r}) = ${n}!/(${r}!×${n - r}!) = ${allResults.length.toLocaleString()}`;
+        document.getElementById("noteText").textContent =
+          `Rumus: ${formula} kombinasi video`;
+
+        if (allResults.length > 5000) {
+          document.getElementById("noteText").textContent +=
+            " — Hanya menampilkan sebagian (terlalu banyak untuk di-render semua)";
+          allResults = allResults.slice(0, 5000);
+          filtered = [...allResults];
+        }
+      }
+
+      function permute(items, r, current, used) {
+        if (current.length === r) {
+          allResults.push([...current]);
+          return;
+        }
+        for (let i = 0; i < items.length; i++) {
+          if (!used.has(i)) {
+            used.add(i);
+            current.push(items[i]);
+            permute(items, r, current, used);
+            current.pop();
+            used.delete(i);
+          }
+        }
+      }
+
+      function combine(items, r, start, current) {
+        if (current.length === r) {
+          allResults.push([...current]);
+          return;
+        }
+        for (let i = start; i < items.length; i++) {
+          current.push(items[i]);
+          combine(items, r, i + 1, current);
+          current.pop();
+        }
+      }
+
+      function renderTable() {
+        const tbody = document.getElementById("tableBody");
+        const start = (currentPage - 1) * PAGE_SIZE;
+        const end = Math.min(start + PAGE_SIZE, filtered.length);
+        const slice = filtered.slice(start, end);
+
+        tbody.innerHTML =
+          slice.length === 0
+            ? `<tr><td colspan="3" class="empty">Tidak ada hasil ditemukan</td></tr>`
+            : slice
+                .map(
+                  (row, i) => `
+      <tr>
+        <td class="row-num">${start + i + 1}</td>
+        <td>${row.map((v) => `<span class="badge">${v}</span>`).join("")}</td>
+        <td class="seq">${row.join(" → ")}</td>
+      </tr>`,
+                )
+                .join("");
+
+        const total = filtered.length;
+        const totalPages = Math.ceil(total / PAGE_SIZE);
+        document.getElementById("pageInfo").textContent =
+          `Halaman ${currentPage} / ${totalPages} (${total.toLocaleString()} hasil)`;
+        document.getElementById("btnPrev").disabled = currentPage === 1;
+        document.getElementById("btnNext").disabled = currentPage >= totalPages;
+      }
+
+      function filterResults() {
+        const q = document.getElementById("searchBox").value.trim();
+        if (!q) {
+          filtered = [...allResults];
+        } else {
+          const parts = q
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+          filtered = allResults.filter((row) =>
+            parts.every((p) => row.map(String).includes(p)),
+          );
+        }
+        currentPage = 1;
+        renderTable();
+      }
+
+      function prevPage() {
+        if (currentPage > 1) {
+          currentPage--;
+          renderTable();
+        }
+      }
+      function nextPage() {
+        const total = Math.ceil(filtered.length / PAGE_SIZE);
+        if (currentPage < total) {
+          currentPage++;
+          renderTable();
+        }
+      }
+      function reset() {
+        document.getElementById("statsBox").style.display = "none";
+        document.getElementById("resultCard").style.display = "none";
+        document.getElementById("totalN").value = 10;
+        document.getElementById("chooseR").value = 5;
+        allResults = [];
+        filtered = [];
+      }
+
+      // Auto-generate on load
+      generate();
+    </script>
+  </body>
+</html>
